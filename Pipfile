@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ansible = "*"
+ansible-lint = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
+python_full_version = "3.13.1"
+
+[scripts]
+start = "ansible-playbook -i inventories/hosts.yaml site.yaml --ask-become-pass"
