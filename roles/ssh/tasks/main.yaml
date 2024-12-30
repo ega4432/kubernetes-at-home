@@ -1,0 +1,23 @@
+- name: Get hostname
+  ansible.builtin.command: hostname
+  register: hostname_result
+
+- name: Print hostname to console
+  ansible.builtin.debug:
+    msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
+
+- name: Check k8s conf file exists
+  ansible.builtin.stat:
+    path: "{{ k8s_conf_path }}"
+  become: yes
+  register: k8s_conf_status
+
+- name: Create k8s conf file if it does not exist
+  ansible.builtin.copy:
+    src: files/k8s.conf
+    dest: "{{ k8s_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  when: not k8s_conf_status.stat.exists

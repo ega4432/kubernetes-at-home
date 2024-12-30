@@ -1,0 +1,7 @@
+- name: Setup ubuntu machine
+  hosts: all
+  gather_facts: false
+  
+  roles:
+    - name: ssh
+
