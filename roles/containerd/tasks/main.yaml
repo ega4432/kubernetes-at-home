@@ -1,0 +1,58 @@
+- name: Check if containerd is installed
+  ansible.builtin.command: containerd --version
+  register: containerd_check
+  failed_when: false
+  changed_when: false
+
+- name: Download containerd archive
+  ansible.builtin.get_url:
+    url: "https://github.com/containerd/containerd/releases/download/v{{ version }}/containerd-{{ version }}-linux-arm64.tar.gz"
+    dest: /tmp/
+  when: containerd_check.rc != 0
+
+- name: Check if contained archive
+  ansible.builtin.stat:
+    path: /tmp/containerd-{{ version }}-linux-arm64.tar.gz
+  register: containerd_archive
+  when: containerd_check.rc != 0
+
+- name: Unarchive containerd archive
+  ansible.builtin.unarchive:
+    src: /tmp/containerd-{{ version }}-linux-arm64.tar.gz
+    dest: /usr/local
+    remote_src: yes
+  when:
+    - containerd_check.rc != 0
+    - containerd_archive.stat.exists
+  become: yes
+
+- name: Check if containerd.service is installed
+  ansible.builtin.stat:
+    path: /usr/local/lib/systemd/system/containerd.service
+  register: containerd_service
+
+- name: Ensure /usr/local/lib/systemd/system directory exists
+  ansible.builtin.file:
+    path: /usr/local/lib/systemd/system/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+  when: not containerd_service.stat.exists
+
+- name: Download containerd systemd unit file
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service"
+    dest: /usr/local/lib/systemd/system/
+  become: yes
+  when: not containerd_service.stat.exists
+
+- name: Ensure containerd service is enable and running
+  ansible.builtin.systemd_service:
+    daemon-reload: true
+    name: containerd
+    enabled: true
+    state: started
+  become: yes
+  when: not containerd_service.stat.exists

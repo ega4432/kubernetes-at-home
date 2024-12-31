@@ -6,18 +6,23 @@
   ansible.builtin.debug:
     msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
 
-- name: Check k8s conf file exists
-  ansible.builtin.stat:
-    path: "{{ k8s_conf_path }}"
-  become: yes
-  register: k8s_conf_status
+- name: Setup kernel parameter
+  block:
+  - name: Ensure k8s conf file exists
+    ansible.builtin.stat:
+      path: "{{ k8s_conf_path }}"
+    register: k8s_conf_status
 
-- name: Create k8s conf file if it does not exist
-  ansible.builtin.copy:
-    src: files/k8s.conf
-    dest: "{{ k8s_conf_path }}"
-    owner: root
-    group: root
-    mode: '0644'
+  - name: Create k8s conf file if it does not exist
+    ansible.builtin.copy:
+      src: files/k8s.conf
+      dest: "{{ k8s_conf_path }}"
+      owner: root
+      group: root
+      mode: '0644'
+    when: not k8s_conf_status.stat.exists
+
+  - name: Reload sysctl settings
+    ansible.builtin.command: sysctl --system
+    when: not k8s_conf_status.stat.exists
   become: yes
-  when: not k8s_conf_status.stat.exists
