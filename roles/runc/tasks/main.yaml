@@ -1,0 +1,23 @@
+- name: Check if runc is installed
+  ansible.builtin.command: runc --version
+  register: runc_check
+  failed_when: false
+  changed_when: false
+
+- name: Download run archive
+  ansible.builtin.get_url:
+    url: "https://github.com/opencontainers/runc/releases/download/v{{ version }}/runc.arm64"
+    dest: /tmp/
+  register: download_archive
+  when: runc_check.rc != 0
+
+- name: Display download result
+  ansible.builtin.debug:
+    msg: "result {{ download_archive.status_code }}"
+  when: runc_check.rc != 0
+
+- name: Install runc
+  ansible.builtin.command: install -m 755 /tmp/runc.ard64 /usr/local/sbin/runc
+  when: download_archive.status_code == 200
+  become: yes
+
