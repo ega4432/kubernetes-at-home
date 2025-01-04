@@ -1,28 +1,32 @@
 - name: Get hostname
   ansible.builtin.command: hostname
   register: hostname_result
+  changed_when: false
 
 - name: Print hostname to console
   ansible.builtin.debug:
     msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
+  changed_when: false
 
 - name: Setup kernel parameter
+  become: true
   block:
-  - name: Ensure k8s conf file exists
-    ansible.builtin.stat:
-      path: "{{ k8s_conf_path }}"
-    register: k8s_conf_status
+    - name: Ensure k8s conf file exists
+      ansible.builtin.stat:
+        path: "{{ ssh_k8s_conf_path }}"
+      register: k8s_conf_status
 
-  - name: Create k8s conf file if it does not exist
-    ansible.builtin.copy:
-      src: files/k8s.conf
-      dest: "{{ k8s_conf_path }}"
-      owner: root
-      group: root
-      mode: '0644'
-    when: not k8s_conf_status.stat.exists
+    - name: Create k8s conf file if it does not exist
+      ansible.builtin.copy:
+        src: files/k8s.conf
+        dest: "{{ ssh_k8s_conf_path }}"
+        owner: root
+        group: root
+        mode: '0644'
+      when: not k8s_conf_status.stat.exists
 
-  - name: Reload sysctl settings
-    ansible.builtin.command: sysctl --system
-    when: not k8s_conf_status.stat.exists
-  become: yes
+    - name: Reload sysctl settings
+      ansible.builtin.command: sysctl --system
+      register: reload_sysctl
+      when: not k8s_conf_status.stat.exists
+      changed_when: reload_sysctl.rc != 0

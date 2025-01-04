@@ -3,6 +3,6 @@
   gather_facts: false
 
   roles:
-    - name: ssh
-    - name: containerd
-    - name: runc
+    - role: ssh
+    - role: containerd
+    - role: runc

@@ -1,1 +1,1 @@
-k8s_conf_path: /etc/sysctl.d/k8s.conf
+ssh_k8s_conf_path: /etc/sysctl.d/k8s.conf
