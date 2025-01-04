@@ -12,11 +12,6 @@
   register: download_archive
   when: runc_check.rc != 0
 
-- name: Display download result
-  ansible.builtin.debug:
-    msg: "result {{ download_archive.status_code }}"
-  when: runc_check.rc != 0
-
 - name: Install runc
   ansible.builtin.command: install -m 755 /tmp/runc.ard64 /usr/local/sbin/runc
   register: install_runc

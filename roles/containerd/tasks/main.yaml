@@ -8,7 +8,7 @@
   ansible.builtin.get_url:
     url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-arm64.tar.gz"
     dest: /tmp/
-    mode: '664'
+    mode: '0664'
   register: download_archive
   when: containerd_check.rc != 0
 
@@ -17,15 +17,10 @@
     src: /tmp/containerd-{{ containerd_version }}-linux-arm64.tar.gz
     dest: /usr/local
     remote_src: true
-  when: download_archive.status_code == 200
+  when: download_archive is changed
   become: true
 
-- name: Check if containerd.service is installed
-  ansible.builtin.stat:
-    path: /usr/local/lib/systemd/system/containerd.service
-  register: containerd_service
-
-- name: Ensure /usr/local/lib/systemd/system directory exists
+- name: Create an unit file directory
   ansible.builtin.file:
     path: /usr/local/lib/systemd/system/
     state: directory
@@ -33,15 +28,16 @@
     group: root
     mode: '0755'
   become: true
-  when: not containerd_service.stat.exists
+  register: containerd_service
 
 - name: Download containerd systemd unit file
   ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service"
     dest: /usr/local/lib/systemd/system/
-    mode: '664'
+    mode: '0644'
   become: true
-  when: not containerd_service.stat.exists
+  register: download_containerd_service_file
+  when: containerd_service is changed
 
 - name: Ensure containerd service is enable and running
   ansible.builtin.systemd_service:
@@ -50,4 +46,33 @@
     enabled: true
     state: started
   become: true
-  when: not containerd_service.stat.exists
+  register: start_containerd
+  when: download_containerd_service_file is skipped
+
+- name: Create a config directory
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  register: containerd_config
+
+- name: Standard out default config
+  ansible.builtin.command: containerd config default
+  changed_when: false
+  register: stdout_default_config
+  when:
+    - start_containerd is succeeded
+    - containerd_config is changed
+
+- name: Create a default config file
+  ansible.builtin.copy:
+    content: "{{ stdout_default_config.stdout }}"
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: stdout_default_config is not skipped
