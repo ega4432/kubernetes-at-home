@@ -6,7 +6,7 @@
 
 - name: Download containerd archive
   ansible.builtin.get_url:
-    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-arm64.tar.gz"
+    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version }}/containerd-{{ containerd.version }}-linux-arm64.tar.gz"
     dest: /tmp/
     mode: '0664'
   register: download_archive
@@ -14,7 +14,7 @@
 
 - name: Unarchive containerd archive
   ansible.builtin.unarchive:
-    src: /tmp/containerd-{{ containerd_version }}-linux-arm64.tar.gz
+    src: /tmp/containerd-{{ containerd.version }}-linux-arm64.tar.gz
     dest: /usr/local
     remote_src: true
   when: download_archive is changed
@@ -76,3 +76,20 @@
     mode: '0644'
   become: true
   when: stdout_default_config is not skipped
+
+- name: Configure systemd cgroup driver
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    regexp: 'SystemdCgroup = true'
+    insertafter: "^\\s*\\[plugins\\.\\'io\\.containerd\\.cri\\.v1\\.runtime\\'\\.containerd\\.runtimes\\.runc\\.options\\]"
+    line: '            SystemdCgroup = true'
+    state: present
+  become: true
+  register: configure_systemd_cgroup_driver
+
+- name: Restart containerd service
+  ansible.builtin.systemd_service:
+    name: containerd
+    state: restarted
+  become: true
+  when: configure_systemd_cgroup_driver is changed

@@ -15,6 +15,7 @@
       ansible.builtin.copy:
         src: files/module.conf
         dest: "{{ ssh_module_conf_path }}"
+        force: false
         owner: root
         group: root
         mode: '0644'
@@ -22,7 +23,7 @@
 
     - name: Reflect modules to kernel
       ansible.builtin.command: "modprobe {{ module_name }}"
-      loop: "{{ modules }}"
+      loop: "{{ ssh_modules }}"
       loop_control:
         loop_var: module_name
       when:
@@ -33,6 +34,7 @@
       ansible.builtin.copy:
         src: files/sysctl.conf
         dest: "{{ ssh_sysctl_conf_path }}"
+        force: false
         owner: root
         group: root
         mode: '0644'
