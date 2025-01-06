@@ -1,6 +1,6 @@
 # kubernetes-at-home
 
-## Usaga
+## Usage
 
 ```sh
 $ pipenv install
