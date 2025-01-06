@@ -13,7 +13,7 @@ def main():
         }
     }
 
-    print(json.dumps(inventory, indent=2)
+    print(json.dumps(inventory, indent=2))
 
 if __name__ == "__main__":
     main()

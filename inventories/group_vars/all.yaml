@@ -1,0 +1,6 @@
+containerd:
+  version: "2.0.1"
+runc:
+  version: "1.2.2"
+cni_plugins:
+  version: "1.6.1"

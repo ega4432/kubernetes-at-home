@@ -3,8 +3,10 @@
   gather_facts: false
 
   roles:
-    - role: ssh
-    - role: containerd
+    - name: ssh
+    - name: containerd
       when: containerd is defined
-    - role: runc
+    - name: runc
       when: runc is defined
+    - name: cni_plugins
+      when: cni_plugins is defined

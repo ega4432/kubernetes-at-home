@@ -1,0 +1,23 @@
+- name: Ensure CNI plugins directory exists
+  ansible.builtin.file:
+    path: "{{ cni_plugins_install_path }}"
+    state: directory
+    mode: "{{ cni_plugins_directory_permission }}"
+  become: true
+  register: cni_plugin_path
+
+- name: Download CNI plugins archive
+  ansible.builtin.get_url:
+    url: "{{ cni_plugins_url }}"
+    dest: "{{ cni_plugins_tmp_path }}"
+    mode: "{{ cni_plugins_archive_permission }}"
+  register: download_archive
+  when: cni_plugin_path is changed
+
+- name: Unarchive CNI plugins archive
+  ansible.builtin.unarchive:
+    src: "{{ cni_plugins_download_path }}"
+    dest: "{{ cni_plugins_install_path }}"
+    remote_src: true
+  when: download_archive is changed
+  become: true

@@ -15,6 +15,5 @@
 - name: Install runc
   ansible.builtin.command: install -m 755 /tmp/runc.arm64 /usr/local/sbin/runc
   changed_when: install_runc.rc != 0
-  register: install_runc
   when: download_archive is changed
   become: true
