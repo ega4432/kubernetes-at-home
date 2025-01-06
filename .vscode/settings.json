@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "containerd",
+        "controlplane",
+        "lineinfile",
+        "runc",
+        "runtimes"
+    ],
+    "ansible.python.interpreterPath": "/home/ega4432/.local/share/virtualenvs/kubernetes-at-home-ayej2zAK/bin/python"
+}
