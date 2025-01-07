@@ -1,0 +1,1 @@
+kubelet_arg_config_path: '/etc/default/kubelet'

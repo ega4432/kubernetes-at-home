@@ -11,3 +11,16 @@
     - name: cni_plugins
       when: cni_plugins is defined
     - name: apt
+
+- name: Setup controlplane
+  hosts: controlplane
+  gather_facts: false
+
+  roles:
+    - name: kubelet
+
+- name: Setup woker nodes
+  hosts: workers
+  gather_facts: false
+
+  roles:

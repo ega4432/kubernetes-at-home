@@ -1,5 +1,9 @@
 all:
-  hosts:
+  children:
     controlplane:
-    node1:
-    node2:
+      hosts:
+        controlplane:
+    workers:
+      hosts:
+        node1:
+        node2:
