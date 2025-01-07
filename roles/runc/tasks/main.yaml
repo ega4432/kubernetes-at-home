@@ -6,14 +6,15 @@
 
 - name: Download runc archive
   ansible.builtin.get_url:
-    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc.version }}/runc.arm64"
+    url: '{{ runc_download_url }}'
     dest: /tmp/
     mode: '0664'
   register: download_archive
   when: runc_installed.rc != 0
 
 - name: Install runc
-  ansible.builtin.command: install -m 755 /tmp/runc.arm64 /usr/local/sbin/runc
-  changed_when: install_runc.rc != 0
-  when: download_archive is changed
+  ansible.builtin.command: 'install -m 755 /tmp/runc.arm64 {{ runc_install_path }}'
   become: true
+  changed_when: install_runc.rc == 0
+  register: install_runc
+  when: download_archive is changed

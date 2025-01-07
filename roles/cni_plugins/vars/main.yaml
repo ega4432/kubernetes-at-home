@@ -1,6 +1,7 @@
-cni_plugins_url: "https://github.com/containernetworking/plugins/releases/download/v{{ cni_plugins.version }}/cni-plugins-linux-amd64-v{{ cni_plugins.version }}.tgz"
-cni_plugins_tmp_path: "/tmp"
-cni_plugins_download_path: "{{ cni_plugins_tmp_path }}/cni-plugins-linux-amd64-v{{ cni_plugins.version }}.tgz"
+cni_plugins_github: 'https://github.com/containernetworking/plugins/releases/download'
+cni_plugins_url: '{{ cni_plugins_github }}/v{{ cni_plugins.version }}/cni-plugins-linux-amd64-v{{ cni_plugins.version }}.tgz'
+cni_plugins_tmp_path: '/tmp'
+cni_plugins_download_path: '{{ cni_plugins_tmp_path }}/cni-plugins-linux-amd64-v{{ cni_plugins.version }}.tgz'
 cni_plugins_directory_permission: '0755'
 cni_plugins_archive_permission: '0644'
-cni_plugins_install_path: "/opt/cni/bin/"
+cni_plugins_install_path: '/opt/cni/bin/'

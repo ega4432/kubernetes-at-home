@@ -3,6 +3,7 @@
         "containerd",
         "controlplane",
         "lineinfile",
+        "pipenv",
         "runc",
         "runtimes"
     ],

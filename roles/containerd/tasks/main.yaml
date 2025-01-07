@@ -6,7 +6,7 @@
 
 - name: Download containerd archive
   ansible.builtin.get_url:
-    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd.version }}/containerd-{{ containerd.version }}-linux-arm64.tar.gz"
+    url: '{{ containerd_download_url }}'
     dest: /tmp/
     mode: '0664'
   register: download_archive
@@ -14,7 +14,7 @@
 
 - name: Unarchive containerd archive
   ansible.builtin.unarchive:
-    src: /tmp/containerd-{{ containerd.version }}-linux-arm64.tar.gz
+    src: '{{ containerd_archive_path }}'
     dest: /usr/local
     remote_src: true
   when: download_archive is changed
@@ -22,7 +22,7 @@
 
 - name: Create an unit file directory
   ansible.builtin.file:
-    path: /usr/local/lib/systemd/system/
+    path: '{{ containerd_systemd_path }}'
     state: directory
     owner: root
     group: root
@@ -32,8 +32,8 @@
 
 - name: Download containerd systemd unit file
   ansible.builtin.get_url:
-    url: "https://raw.githubusercontent.com/containerd/containerd/main/containerd.service"
-    dest: /usr/local/lib/systemd/system/
+    url: '{{ containerd_systemd_unit_url }}'
+    dest: '{{ containerd_systemd_path }}'
     mode: '0644'
   become: true
   register: download_containerd_service_file
@@ -51,7 +51,7 @@
 
 - name: Create a config directory
   ansible.builtin.file:
-    path: /etc/containerd
+    path: '{{ containerd_config_directory }}'
     state: directory
     owner: root
     group: root
@@ -70,7 +70,7 @@
 - name: Create a default config file
   ansible.builtin.copy:
     content: "{{ stdout_default_config.stdout }}"
-    dest: /etc/containerd/config.toml
+    dest: '{{ containerd_config_path }}'
     owner: root
     group: root
     mode: '0644'
@@ -79,7 +79,7 @@
 
 - name: Configure systemd cgroup driver
   ansible.builtin.lineinfile:
-    path: /etc/containerd/config.toml
+    path: '{{ containerd_config_path }}'
     regexp: 'SystemdCgroup = true'
     insertafter: "^\\s*\\[plugins\\.\\'io\\.containerd\\.cri\\.v1\\.runtime\\'\\.containerd\\.runtimes\\.runc\\.options\\]"
     line: '            SystemdCgroup = true'

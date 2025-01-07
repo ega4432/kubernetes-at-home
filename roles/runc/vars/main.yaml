@@ -1,0 +1,2 @@
+runc_download_url: 'https://github.com/opencontainers/runc/releases/download/v{{ runc.version }}/runc.arm64'
+runc_install_path: '/usr/local/sbin/runc'

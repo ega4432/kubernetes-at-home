@@ -26,6 +26,7 @@
       loop: "{{ ssh_modules }}"
       loop_control:
         loop_var: module_name
+      register: reflect_modules
       when:
         - create_module_conf is changed
         - modules is defined
@@ -44,4 +45,4 @@
       ansible.builtin.command: sysctl --system
       register: reload_sysctl
       when: create_sysctl_conf is changed
-      changed_when: reload_sysctl.rc != 0
+      changed_when: reload_sysctl.rc == 0

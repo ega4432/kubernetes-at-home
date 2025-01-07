@@ -1,0 +1,7 @@
+containerd_github: 'https://github.com/containerd/containerd/releases/download'
+containerd_download_url: '{{ containerd_github }}/v{{ containerd.version }}/containerd-{{ containerd.version }}-linux-arm64.tar.gz'
+containerd_archive_path: '/tmp/containerd-{{ containerd.version }}-linux-arm64.tar.gz'
+containerd_systemd_unit_url: 'https://raw.githubusercontent.com/containerd/containerd/main/containerd.service'
+containerd_systemd_path: '/usr/local/lib/systemd/system/'
+containerd_config_directory: '/etc/containerd'
+containerd_config_path: '{{ containerd_config_directory }}/config.toml'
