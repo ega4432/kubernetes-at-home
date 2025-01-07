@@ -1,0 +1,43 @@
+- name: Intall and configure kubernetes tools
+  become: true
+  block:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: '{{ apt_required_packages }}'
+        state: present
+
+    - name: Ensure keyrings directory exists
+      ansible.builtin.file:
+        path: '{{ apt_keyrings_path }}'
+        state: directory
+        mode: '0755'
+
+    - name: Download kubernetes apt key and save it to keyring
+      ansible.builtin.get_url:
+        url: '{{ apt_keyrings_download_url }}'
+        dest: '{{ apt_repository_dest }}'
+        mode: '0644'
+        force: false
+
+    - name: Add kubernetes repository
+      ansible.builtin.apt_repository:
+        repo: '{{ apt_repository }}'
+        state: present
+        update_cache: true
+      register: kubernetes_repo_added
+
+    - name: Install kubernetes packages
+      ansible.builtin.apt:
+        name: '{{ apt_kubernetes_packages }}'
+        state: present
+      register: kubernetes_packages_installed
+      when: kubernetes_repo_added is changed
+
+    - name: Hold kubernetes packages to present automatic upgrades
+      ansible.builtin.command: "apt-mark hold {{ apt_kubernetes_packages | join(' ') }}"
+      when: kubernetes_packages_installed is changed

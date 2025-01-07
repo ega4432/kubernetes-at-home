@@ -1,6 +1,10 @@
 containerd:
-  version: "2.0.1"
+  version: '2.0.1'
 runc:
-  version: "1.2.2"
+  version: '1.2.2'
 cni_plugins:
-  version: "1.6.1"
+  version: '1.6.1'
+kubernetes:
+  version:
+    full: '1.32.0'
+    short: '1.32'

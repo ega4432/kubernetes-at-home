@@ -1,5 +1,11 @@
 # kubernetes-at-home
 
+## Installation
+
+```sh
+$ asdf install
+```
+
 ## Usage
 
 ```sh

@@ -1,0 +1,15 @@
+apt_required_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gpg
+apt_keyrings_path: '/etc/apt/keyrings'
+apt_keyrings_url: 'https://pkgs.k8s.io/core:/stable:/v{{ kubernetes.version.short }}/deb'
+apt_keyrings_name: 'Release.key'
+apt_keyrings_download_url: '{{ apt_keyrings_url }}/{{ apt_keyrings_name }}'
+apt_repository_dest: '{{ apt_keyrings_path }}/kubernetes-apt-keyring.asc'
+apt_repository: 'deb [signed-by={{ apt_repository_dest }}] {{ apt_keyrings_url }}/ /'
+apt_kubernetes_packages:
+  - kubeadm
+  - kubectl
+  - kubelet

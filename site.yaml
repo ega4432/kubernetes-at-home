@@ -10,3 +10,4 @@
       when: runc is defined
     - name: cni_plugins
       when: cni_plugins is defined
+    - name: apt
