@@ -3,7 +3,7 @@
   gather_facts: false
 
   roles:
-    - name: ssh
+    - name: ubuntu
     - name: containerd
       when: containerd is defined
     - name: runc
@@ -11,6 +11,7 @@
     - name: cni_plugins
       when: cni_plugins is defined
     - name: apt
+      when: kubernetes is defined
 
 - name: Setup controlplane
   hosts: controlplane
