@@ -7,9 +7,25 @@ def main():
     inventory = {
         "_meta": {
             "hostvars": {
-                "ansible_host": "localhost",
-                "ansible_python_interpreter": sys.executable
+                "controlplane": {
+                    "ansible_python_interpreter": sys.executable
+                },
+                "node1": {
+                    "ansible_python_interpreter": sys.executable
+                },
+                "node2": {
+                    "ansible_python_interpreter": sys.executable
+                }
             }
+        },
+        "all": {
+            "children": ["ungrouped", "controlplane", "workers"]
+        },
+        "controlplane": {
+            "hosts": ["controlplane"]
+        },
+        "workers": {
+            "hosts": ["node1", "node2"]
         }
     }
 

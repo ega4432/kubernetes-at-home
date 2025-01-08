@@ -1,1 +1,2 @@
-message: test
+pod_network_cidr: '10.244.0.0/16'
+calico_version: '3.29.1'
