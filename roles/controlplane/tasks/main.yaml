@@ -1,0 +1,19 @@
+- name: Setup controlplane
+  become: true
+  block:
+    - name: Check if kubernetes is already installed
+      ansible.builtin.stat:
+        path: '{{ controlplane_admin_conf }}'
+      register: admin_conf
+
+    - name: Initialize Kubernetes control plane
+      ansible.builtin.command: kubeadm init --pod-network-cidr={{ controlplane_pod_network_cidr }}
+      changed_when: true
+      register: kubeadm_init
+      when: not admin_conf.stat.exists
+
+    - name: Extract kubeadm join command
+      ansible.builtin.command:
+      changed_when:
+      register:
+      when: kubeadm_init is defined

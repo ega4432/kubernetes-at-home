@@ -1,6 +1,6 @@
 - name: Setup ubuntu machine
   hosts: all
-  gather_facts: false
+  gather_facts: true
 
   roles:
     - name: ubuntu
@@ -19,6 +19,8 @@
 
   roles:
     - name: kubelet
+    - name: controlplane
+      when: kubernetes is defined
 
 - name: Setup woker nodes
   hosts: workers

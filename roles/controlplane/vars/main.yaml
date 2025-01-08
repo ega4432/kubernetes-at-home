@@ -1,0 +1,2 @@
+controlplane_admin_conf: '/etc/kubernetes/admin.conf'
+controlplane_pod_network_cidr: '192.168.0.0/16'

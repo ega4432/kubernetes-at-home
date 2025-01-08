@@ -7,14 +7,13 @@
 #   ansible.builtin.debug:
 #     msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
 #   changed_when: false
-
 - name: Configure Kernel Modules and Sysctl Settings
   become: true
   block:
     - name: Disable swap to optimize kernel settings
       ansible.builtin.command: swapoff -a
-      when: ansible_facts['ansible_swaptotal_mb'] > 0
-      changed_when: swapoff_result.rc == 0 and ansible_facts['ansible_swaptotal_mb'] > 0
+      when: ansible_facts.swaptotal_mb > 0
+      changed_when: swapoff_result.rc == 0 and ansible_facts.swaptotal_mb > 0
       register: swapoff_result
 
     - name: Create module conf if it does not exist
