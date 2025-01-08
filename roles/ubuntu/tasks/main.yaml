@@ -7,6 +7,7 @@
 #   ansible.builtin.debug:
 #     msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
 #   changed_when: false
+
 - name: Configure Kernel Modules and Sysctl Settings
   become: true
   block:
@@ -19,7 +20,7 @@
     - name: Create module conf if it does not exist
       ansible.builtin.copy:
         src: files/module.conf
-        dest: "{{ ssh_module_conf_path }}"
+        dest: "{{ ubuntu_module_conf_path }}"
         force: false
         owner: root
         group: root
@@ -28,7 +29,7 @@
 
     - name: Reflect modules to kernel
       ansible.builtin.command: "modprobe {{ module_name }}"
-      loop: "{{ ssh_modules }}"
+      loop: "{{ ubuntu_modules }}"
       loop_control:
         loop_var: module_name
       register: reflect_modules
@@ -39,7 +40,7 @@
     - name: Create sysctl conf if it does not exist
       ansible.builtin.copy:
         src: files/sysctl.conf
-        dest: "{{ ssh_sysctl_conf_path }}"
+        dest: "{{ ubuntu_sysctl_conf_path }}"
         force: false
         owner: root
         group: root
@@ -47,7 +48,7 @@
       register: create_sysctl_conf
 
     - name: Reload sysctl settings
-      ansible.builtin.command: sysctl --system
+      ansible.buitin.command: sysctl --system
       register: reload_sysctl
       when: create_sysctl_conf is changed
       changed_when: reload_sysctl.rc == 0

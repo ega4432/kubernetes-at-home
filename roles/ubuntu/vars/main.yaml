@@ -1,5 +1,5 @@
-ssh_module_conf_path: /etc/modules-load.d/k8s.conf
-ssh_sysctl_conf_path: /etc/sysctl.d/k8s.conf
-ssh_modules:
+ubuntu_module_conf_path: /etc/modules-load.d/k8s.conf
+ubuntu_sysctl_conf_path: /etc/sysctl.d/k8s.conf
+ubuntu_modules:
   - overlay
   - br_netfilter
