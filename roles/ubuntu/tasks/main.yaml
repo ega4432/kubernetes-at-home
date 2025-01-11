@@ -11,6 +11,10 @@
 - name: Configure Kernel Modules and Sysctl Settings
   become: true
   block:
+    - name: Get controlplane IP
+      ansible.builtin.set_fact:
+        controlplane_ip: "{{ hostvars['controlplane']['ansible_default_ipv4']['address'] }}"
+
     - name: Disable swap to optimize kernel settings
       ansible.builtin.command: swapoff -a
       when: ansible_facts.swaptotal_mb > 0
@@ -48,7 +52,7 @@
       register: create_sysctl_conf
 
     - name: Reload sysctl settings
-      ansible.buitin.command: sysctl --system
+      ansible.builtin.command: sysctl --system
       register: reload_sysctl
       when: create_sysctl_conf is changed
       changed_when: reload_sysctl.rc == 0

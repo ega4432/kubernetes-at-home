@@ -13,14 +13,45 @@
       when: not admin_conf.stat.exists
       notify:
         - Create kube config directory
-        - Copy admin.conf to $HOME/.kube
-        # TODO:
-        # - Save kubeadm token
+        - Copy admin.conf to home directory
 
-# - name: Install Calico operator
-#   ansible.builtin.command: 'kubectl create -f {{ controlplane_calico_operator }}'
-#   changed_when: true
+    - name: Get kubeadm token
+      ansible.builtin.command: "kubeadm token list -o jsonpath='{.token}'"
+      changed_when: false
+      register: kubeadm_token
 
-# - name: Install Calico CRD
-#   ansible.builtin.command: 'kubectl create -f {{ controlplane_calico_crd }}'
-#   changed_when: true
+    - name: Get CA certificate hash
+      ansible.builtin.shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
+        openssl rsa -pubin -outform der 2>/dev/null | \
+        openssl dgst -sha256 -hex | sed 's/^.* //'
+      changed_when: false
+      register: ca_cert_hash
+
+    - name: Set facts for joining kubernetes cluster
+      ansible.builtin.set_fact:
+        kubeadm_token: '{{ kubeadm_token.stdout }}'
+        ca_cert_hash: '{{ ca_cert_hash.stdout }}'
+
+- name: Install Calico operator
+  ansible.builtin.command: "kubectl create -f {{ controlplane_calico_operator }}"
+  changed_when: true
+  environment:
+    KUBECONFIG: '{{ controlplane_kubeconfig }}'
+
+- name: Get Calico CRD yaml
+  ansible.builtin.get_url:
+    url: '{{ controlplane_calico_crd }}'
+    dest: /tmp/calico-custom-resources.yaml
+    mode: '0644'
+
+- name: Modify custome resource
+  ansible.builtin.replace:
+    path: /tmp/calico-custom-resources.yaml
+    regexp: ^(\s+cidr:).*
+    replace: \1 {{ pod_network_cidr }}
+
+- name: Deploy Calico CRD
+  ansible.builtin.command: kubectl create -f /tmp/calico-custom-resources.yaml
+  changed_when: true
+  environment:
+    KUBECONFIG: '{{ controlplane_kubeconfig }}'

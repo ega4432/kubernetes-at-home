@@ -1,0 +1,24 @@
+required_ports:
+  - port: '179'
+    protocol: 'TCP'
+    comment: 'Calico networking(BGP)'
+
+  - port: '4789'
+    protocol: 'UDP'
+    comment: 'Calico networking with VXLAN enabled'
+
+  - port: '5473'
+    protocol: 'TCP'
+    comment: 'Calico networking with Typha enabled'
+
+  - port: '51820:51821'
+    protocol: 'UDP'
+    comment: 'Calico networking with IPv4/v6 Wireguard enabled'
+
+  - port: '10250'
+    protocol: 'TCP'
+    comment: 'Kubelet API'
+
+  - port: '30000:32767'
+    protocol: 'TCP'
+    comment: 'NodePort Services'

@@ -1,2 +1,42 @@
 pod_network_cidr: '10.244.0.0/16'
 calico_version: '3.29.1'
+required_ports:
+  - port: '6443'
+    protocol: 'TCP'
+    comment: 'Kubernetes API server'
+
+  - port: '443'
+    comment: 'Kubernetes API server'
+    protocol: 'TCP'
+
+  - port: '2379:2380'
+    protocol: 'TCP'
+    comment: 'etcd server client API'
+
+  - port: '179'
+    protocol: 'TCP'
+    comment: 'Calico networking(BGP)'
+
+  - port: '4789'
+    protocol: 'UDP'
+    comment: 'Calico networking with VXLAN enabled'
+
+  - port: '5473'
+    protocol: 'TCP'
+    comment: 'Calico networking with Typha enabled'
+
+  - port: '10250'
+    protocol: 'TCP'
+    comment: 'Kubelet API'
+
+  - port: '10257'
+    protocol: 'TCP'
+    comment: 'kube-controller-manager'
+
+  - port: '10259'
+    protocol: 'TCP'
+    comment: 'kube-scheduler'
+
+  - port: '51820:51821'
+    protocol: 'UDP'
+    comment: 'Calico networking with IPv4/v6 Wireguard enabled'

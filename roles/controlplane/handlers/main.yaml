@@ -6,7 +6,7 @@
     group: "{{ lookup('env', 'USER') }}"
     mode: '0755'
 
-- name: Copy admin.conf to $HOME/.kube
+- name: Copy admin.conf to home directory
   ansible.builtin.copy:
     src: '/etc/kubernetes/admin.conf'
     dest: "{{ lookup('env', 'HOME') }}/.kube/config"
@@ -15,9 +15,3 @@
     mode: '0600'
     remote_src: true
   become: true
-
-# - name: Print result of kubeadm init
-#   ansible.builtin.debug:
-#     msg: '{{ kubeadm_init.stdout }}'
-
-# - name:
