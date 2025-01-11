@@ -1,19 +1,20 @@
-# - name: Get hostname
-#   ansible.builtin.command: hostname
-#   register: hostname_result
-#   changed_when: false
-
-# - name: Print hostname to console
-#   ansible.builtin.debug:
-#     msg: "Hostname fo {{ inventory_hostname }}: {{ hostname_result.stdout }}"
-#   changed_when: false
-
 - name: Configure Kernel Modules and Sysctl Settings
   become: true
   block:
     - name: Get controlplane IP
       ansible.builtin.set_fact:
         controlplane_ip: "{{ hostvars['controlplane']['ansible_default_ipv4']['address'] }}"
+
+    - name: Configure UFW for Kubernetes node
+      community.general.ufw:
+        rule: "{{ ufw.rule | default('allow') }}"
+        state: "{{ ufw.state | default('enabled') }}"
+        port: '{{ ufw.port }}'
+        proto: '{{ ufw.protocol | lower }}'
+        comment: "{{ ufw.comment | default('') }}"
+      loop: "{{ hostvars[inventory_hostname]['required_ports'] }}"
+      loop_control:
+        loop_var: ufw
 
     - name: Disable swap to optimize kernel settings
       ansible.builtin.command: swapoff -a
