@@ -20,10 +20,11 @@
   roles:
     - name: kubelet
     - name: controlplane
-      when: kubernetes is defined
+      when: pod_network_cidr is defined
 
 - name: Setup woker nodes
   hosts: workers
   gather_facts: false
 
   roles:
+    - name: nodes

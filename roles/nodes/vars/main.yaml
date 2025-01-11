@@ -1,0 +1,3 @@
+nodes_controlplane_ip: "{{ hostvars['controlplane']['ansible_default_ipv4']['address'] }}"
+nodes_token: "{{ hostvars['controlplane']['kubeadm_token'] }}"
+nodes_hash: "{{ hostvars['controlplane']['ca_cert_hash'] }}"

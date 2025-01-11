@@ -1,0 +1,8 @@
+- name: Print join command
+  ansible.builtin.debug:
+    msg: 'kubeadm join {{ nodes_controlplane_ip }}:6443 --token {{ nodes_token }} --discovery-token-ca-cert-hash sha256:{{ nodes_hash }}'
+
+- name: Join node to cluster
+  ansible.builtin.command: 'kubeadm join {{ nodes_controlplane_ip }}:6443 --token {{ nodes_token }} --discovery-token-ca-cert-hash sha256:{{ nodes_hash }}'
+  become: true
+  changed_when: true
